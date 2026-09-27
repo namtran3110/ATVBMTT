@@ -124,41 +124,94 @@ console.log(" =>", decryptedMessage);
 ---
 
 ### BÀI 2: THUẬT TOÁN MÃ HÓA BẤT ĐỐI XỨNG RSA VÀ NGUYÊN LÝ SINH CẶP KHÓA
-
-### 1. Thuật toán mã hóa bất đối xứng RSA
+1. Thuật toán mã hóa bất đối xứng RSA
 RSA (đặt theo tên ba nhà khoa học Rivest, Shamir và Adleman) là thuật toán mã hóa bất đối xứng phổ biến nhất hiện nay. Độ bảo mật của RSA dựa trên độ khó của bài toán phân tích một số nguyên cực lớn thành tích của hai số nguyên tố.
-
 Trong hệ thống RSA, mỗi người dùng sở hữu một cặp khóa gồm:
 * **Khóa công khai (Public Key - gồm hai tham số e và n):** Được công khai cho tất cả mọi người, dùng để MÃ HÓA dữ liệu hoặc KIỂM TRA CHỮ KÝ.
 * **Khóa bí mật (Private Key - gồm hai tham số d và n):** Chỉ duy nhất người sở hữu giữ bí mật, dùng để GIẢI MÃ dữ liệu hoặc TẠO CHỮ KÝ SỐ.
-
----
-
 ### 2. Nguyên lý sinh cặp khóa RSA
-
 Quy trình tạo cặp khóa RSA gồm 5 bước toán học cơ bản:
-
 * **Bước 1 (Chọn số nguyên tố):** Chọn hai số nguyên tố ngẫu nhiên cực lớn là p và q (với p khác q).
 * **Bước 2 (Tính Modulus):** Tính tích n = p * q. (n được gọi là Modulus, độ dài bit của n chính là độ dài khóa RSA, ví dụ: 2048 bit hoặc 4096 bit).
 * **Bước 3 (Tính giá trị Phi Euler):** Tính giá trị Phi(n) = (p - 1) * (q - 1).
 * **Bước 4 (Chọn số mũ công khai e):** Chọn số mũ mã hóa e sao cho e nằm trong khoảng từ 1 đến Phi(n) và e là số nguyên tố cùng nhau với Phi(n) (nghĩa là Ước số chung lớn nhất của e và Phi(n) bằng 1). Thực tế người ta thường chọn e = 65537.
 * **Bước 5 (Tính số mũ bí mật d):** Tính số mũ giải mã bí mật d sao cho: (d * e) chia cho Phi(n) có dư là 1 (d là nghịch đảo nhân modular của e theo modulo Phi(n)). Người ta sử dụng thuật toán Euclide mở rộng để tìm d.
-
 **Kết quả thu được:**
 * **Khóa công khai (Public Key):** Cặp số (e, n)
 * **Khóa bí mật (Private Key):** Cặp số (d, n)
-
----
-
 ### 3. Quy trình Mã hóa và Giải mã RSA
-
 * **Quy trình Mã hóa:** 
   Muốn mã hóa thông điệp M (với M có giá trị nhỏ hơn n), ta tính bản mã C theo công thức: 
   `Bản mã C = (M mũ e) chia lấy dư cho n`
-
 * **Quy trình Giải mã:** 
   Muốn khôi phục lại văn bản gốc M từ bản mã C, ta tính theo công thức: 
   `Văn bản gốc M = (C mũ d) chia lấy dư cho n`
+
+---
+
+#### BÀI 3: CÁC MÔ HÌNH ÁP DỤNG RSA, SO SÁNH VỚI AES VÀ MÔ HÌNH KẾT HỢP
+1. Các mô hình áp dụng thuật toán RSA
+Giả sử người gửi là Alice và người nhận là Bob:
+* Khóa công khai của Bob: Public Key Bob
+* Khóa bí mật của Bob: Private Key Bob
+* Khóa công khai của Alice: Public Key Alice
+* Khóa bí mật của Alice: Private Key Alice
+##### Mô hình A: Xác thực người nhận (Đảm bảo tính BẢO MẬT / BÍ MẬT)
+* **Mục tiêu:** Chỉ duy nhất Bob (người nhận hợp pháp) mới đọc được nội dung thông điệp.
+* **Quy trình:**
+  1. Alice dùng "Public Key của Bob" để mã hóa thông điệp M thành bản mã C.
+  2. Alice gửi C qua mạng cho Bob.
+  3. Bob nhận C và dùng "Private Key của Bob" để giải mã thu lại thông điệp M.
+* **Kết quả:** Kẻ xấu trên mạng dù chặn lấy được bản mã C cũng không thể giải mã vì không nắm giữ Private Key của Bob.
+##### Mô hình B: Xác thực người gửi (Đảm bảo CHỮ KÝ SỐ / TÍNH CHỐNG CHỐI BỎ)
+* **Mục tiêu:** Bob xác minh chính xác thông điệp được gửi từ Alice chứ không phải kẻ mạo danh.
+* **Quy trình:**
+  1. Alice dùng "Private Key của Alice" để mã hóa thông điệp (hoặc mã băm) để tạo ra Chữ ký số S.
+  2. Alice gửi thông điệp M cùng Chữ ký S cho Bob.
+  3. Bob dùng "Public Key của Alice" để giải mã Chữ ký S thu được M'.
+  4. Nếu M' trùng khớp với M, Bob tin tưởng 100% thông điệp này do chính Alice gửi.
+##### Mô hình C: Kết hợp Cả Xác thực người gửi VÀ Người nhận (Bảo mật + Chữ ký số)
+* **Mục tiêu:** Vừa giữ bí mật nội dung thông điệp, vừa xác nhận chính xác danh tính người gửi.
+* **Quy trình gửi (Alice):**
+  1. Alice ký thông điệp bằng "Private Key của Alice" để tạo Chữ ký S.
+  2. Alice mã hóa tiếp Chữ ký S bằng "Public Key của Bob" thành bản mã C.
+  3. Alice gửi C cho Bob.
+* **Quy trình nhận (Bob):**
+  1. Bob giải mã C bằng "Private Key của Bob" để lấy lại Chữ ký S.
+  2. Bob dùng "Public Key của Alice" để giải mã S xác minh danh tính Alice.
+ 
+2. So sánh thời gian mã hóa/giải mã giữa RSA và AES
+
+
+| Tiêu chí | Mã hóa AES | Mã hóa RSA |
+| --- | --- | --- |
+| Loại thuật toán | Mã hóa đối xứng | Mã hóa bất đối xứng |
+| Cơ chế khóa | Dùng chung 1 khóa bí mật | Dùng cặp khóa công khai và bí mật |
+| Bản chất toán học | Dịch bit và thay thế byte | Lũy thừa trên số nguyên lớn |
+| Độ dài khóa chuẩn | 128, 192, 256 bit | 2048, 3072, 4096 bit |
+| Tốc độ xử lý | Cực kỳ nhanh | Rất chậm (chậm hơn AES 1.000 - 10.000 lần) |
+| Giới hạn dữ liệu | Không giới hạn | Phải nhỏ hơn kích thước n (dưới 256/512 bytes) |
+| Phân phối khóa | Khó khăn khi gửi khóa qua mạng | Dễ dàng quản lý nhờ khóa công khai |
+
+3. Mô hình kết hợp sức mạnh của RSA và AES (Hệ thống mã hóa lai - Hybrid Cryptosystem)
+Do AES mã hóa cực kỳ nhanh nhưng khó truyền khóa bí mật an toàn, còn RSA quản lý khóa rất tốt nhưng mã hóa dữ liệu lớn lại rất chậm, các hệ thống thực tế (HTTPS, PGP, SSH) luôn kết hợp cả hai thuật toán.
+##### Sơ đồ quy trình hoạt động:
+```text
+[ BÊN GỬI: ALICE ]
+  |
+  +--> 1. Tự động sinh một "Khóa phiên AES" ngẫu nhiên (Session Key K).
+  |
+  +--> 2. Dùng "Khóa phiên AES (K)" để mã hóa Dữ liệu lớn thành [Dữ liệu đã mã hóa].
+  |
+  +--> 3. Dùng "Public Key RSA của Bob" để mã hóa [Khóa phiên K] thành [Khóa K đã mã hóa].
+  |
+  +--> Gửi cả [Dữ liệu đã mã hóa] và [Khóa K đã mã hóa] qua Internet cho Bob.
+
+[ BÊN NHẬN: BOB ]
+  |
+  +--> 1. Bob dùng "Private Key RSA của Bob" để giải mã [Khóa K đã mã hóa] -> Thu lại Khóa phiên K.
+  |
+  +--> 2. Bob dùng Khóa phiên K vừa thu được đưa vào thuật toán AES để giải mã [Dữ liệu đã mã hóa] -> Thu lại Dữ liệu gốc ban đầu.
 
 
 
