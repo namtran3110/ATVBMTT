@@ -120,6 +120,7 @@ const decryptedMessage = decryptAES(encryptedResult);
 console.log("\n[3] Ket qua giai ma (Decrypted Text):");
 console.log(" =>", decryptedMessage);
 ```
+<img width="1633" height="923" alt="image" src="https://github.com/user-attachments/assets/70cb02c1-63d8-4018-a2a8-12419e207670" />
 
 ---
 
