@@ -150,7 +150,7 @@ Quy trình tạo cặp khóa RSA gồm 5 bước toán học cơ bản:
 
 ---
 
-#### BÀI 3: CÁC MÔ HÌNH ÁP DỤNG RSA, SO SÁNH VỚI AES VÀ MÔ HÌNH KẾT HỢP
+### BÀI 3: CÁC MÔ HÌNH ÁP DỤNG RSA, SO SÁNH VỚI AES VÀ MÔ HÌNH KẾT HỢP
 1. Các mô hình áp dụng thuật toán RSA
 Giả sử người gửi là Alice và người nhận là Bob:
 * Khóa công khai của Bob: Public Key Bob
